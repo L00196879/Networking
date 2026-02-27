@@ -10,6 +10,8 @@ Networking Repository for Joseph Taaffe (L00196879)
     * [VLAN](https://github.com/L00196879/Networking/blob/main/Layer%201/VLAN.xlsx)
     * [Switch Config](https://github.com/L00196879/Networking/blob/main/Layer%201/SwitchConfig.xlsx)
     * [Logical Diagram](https://github.com/L00196879/Networking/blob/main/Layer%201/LogicalDiagram.pptx)
+    * [A4 Export](https://github.com/L00196879/Networking/blob/main/Layer%201/A4%20Export.gns3project)
+    * [Scripts](https://github.com/L00196879/Networking/tree/main/Layer%201/Scripts)
  
 ## Dependencies
 - GNS3
