@@ -1,0 +1,33 @@
+en
+conf t
+hostname Switch10
+no logging console informational
+no ip domain-lookup
+int range gi0/0-3
+description Clients
+switchport access vlan 5
+switchport port-security mac-address sticky
+switchport port-security violation protect
+negotiation auto
+spanning-tree portfast edge
+spanning-tree bpduguard enable
+exit
+int range gi1/0-3
+description Servers
+switchport access vlan 6
+exit
+int range gi3/0-3
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk native vlan 999
+switchport trunk allowed vlan 2-15
+switchport access vlan 999
+exit
+int range gi2/0-3
+description UNUSED
+switchport access vlan 1000
+switchport mode access
+shutdown
+exit
+exit
+wr mem

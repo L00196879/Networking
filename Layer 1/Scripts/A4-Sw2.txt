@@ -1,0 +1,175 @@
+en
+conf t
+hostname Switch2
+no logging console informational
+no ip domain-lookup
+
+vlan 2
+name Hosts
+exit
+int vlan 2
+description "Interface to Hosts VLAN"
+ip address 10.47.2.2 255.255.255.0
+vrrp 5 ip 10.47.2.20
+vrrp 5 priority 200
+vrrp 5 preempt
+no shut
+exit
+
+vlan 3
+name StaffRadio
+exit
+int vlan 3
+description "Interface to Staff Radio VLAN"
+ip address 10.47.3.2 255.255.255.0
+vrrp 5 ip 10.47.3.20
+vrrp 5 priority 200
+vrrp 5 preempt
+no shut
+exit
+
+vlan 4
+name PwrInfra
+exit
+int vlan 4
+description "Interface to Power Infrastructure VLAN"
+ip address 10.47.4.2 255.255.255.0
+vrrp 5 ip 10.47.4.20
+vrrp 5 priority 200
+vrrp 5 preempt
+no shut
+exit
+
+vlan 5
+name Technical Clients
+exit
+int vlan 5
+description "Interface to Technical Clients VLAN"
+ip address 10.47.5.2 255.255.255.0
+vrrp 5 ip 10.47.5.20
+vrrp 5 priority 200
+vrrp 5 preempt
+no shut
+exit
+
+vlan 6
+name Infra Servers
+exit
+int vlan 6
+description "Interface to Infrastructure Servers VLAN"
+ip address 10.47.6.2 255.255.255.0
+vrrp 5 ip 10.47.6.20
+vrrp 5 priority 200
+vrrp 5 preempt
+no shut
+exit
+
+vlan 7
+name Telephony
+exit
+int vlan 7
+description "Interface to Telephony VLAN"
+ip address 10.47.7.2 255.255.255.0
+vrrp 5 ip 10.47.7.20
+vrrp 5 priority 200
+vrrp 5 preempt
+no shut
+exit
+
+vlan 8
+name HVAC
+exit
+int vlan 8
+description "Interface to HVAC Infrastructure VLAN"
+ip address 10.47.8.2 255.255.255.0
+vrrp 5 ip 10.47.8.20
+vrrp 5 priority 200
+vrrp 5 preempt
+no shut
+exit
+
+vlan 9
+name Storage
+exit
+int vlan 9
+description "Interface to Storage VLAN"
+ip address 10.47.9.2 255.255.255.0
+vrrp 5 ip 10.47.9.20
+vrrp 5 priority 200
+vrrp 5 preempt
+no shut
+exit
+
+vlan 10
+name NetMan
+exit
+int vlan 10
+description "Interface to NetMan VLAN"
+ip address 10.47.10.2 255.255.255.0
+vrrp 5 ip 10.47.10.20
+vrrp 5 priority 200
+vrrp 5 preempt
+no shut
+exit
+
+vlan 11
+name Cameras
+exit
+int vlan 11
+description "Interface to NetMan VLAN"
+ip address 10.47.11.2 255.255.255.0
+vrrp 5 ip 10.47.11.20
+vrrp 5 priority 200
+vrrp 5 preempt
+no shut
+exit
+
+vlan 12
+name OOBM
+exit
+int vlan 12
+description "Interface to Server OOBM VLAN"
+ip address 10.47.12.2 255.255.255.0
+vrrp 5 ip 10.47.12.20
+vrrp 5 priority 200
+vrrp 5 preempt
+no shut
+exit
+
+vlan 1000
+name Discard
+exit
+vlan 999
+name Native
+exit
+
+int range gi0/0-3
+description Clients
+switchport access vlan 5
+switchport port-security mac-address sticky
+switchport port-security violation protect
+negotiation auto
+spanning-tree portfast edge
+spanning-tree bpduguard enable
+exit
+int range gi1/0-3
+description Servers
+switchport access vlan 6
+exit
+int range gi3/0-3
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk native vlan 999
+switchport trunk allowed vlan 2-15
+switchport access vlan 999
+exit
+
+int range gi2/0-3
+description UNUSED
+switchport access vlan 1000
+switchport mode access
+shutdown
+
+spanning-tree vlan 1-4090 root primary
+exit
+wr mem
