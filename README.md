@@ -17,6 +17,7 @@ Networking Repository for Joseph Taaffe (L00196879)
 - [A5](https://github.com/L00196879/Networking/tree/main/A5)
     * [A5 Export](https://github.com/L00196879/Networking/blob/main/A5/A5%20Export.gns3project)
     * [Switch Config Files](https://github.com/L00196879/Networking/tree/main/A5/Switch%20Config%20Files)
+    * [Diagram & Testing](https://github.com/L00196879/Networking/blob/main/A5/Diagram%20%26%20Testing.md)
 ## Dependencies
 - GNS3
 
