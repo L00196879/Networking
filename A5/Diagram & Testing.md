@@ -1,7 +1,7 @@
 # Assigment 5 Diagram and Testing
 
 ## 1. Diagram
-![Diagram](A5/Images/NetworkDiagram.png)
+![Diagram](Images/NetworkDiagram.png)
 
 ## 2. Testing
 ### IR-HO-100
