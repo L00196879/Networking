@@ -1,0 +1,30 @@
+conf t
+hostname ABR-DC47-147
+no logging console informational
+no ip domain-lookup
+int gi0/3
+ip address 10.255.255.147 255.255.255.0
+duplex auto
+speed auto
+no shutdown
+exit
+int gi0/0
+ip address 10.47.15.101 255.255.255.0
+duplex auto
+speed auto
+no shutdown
+exit
+router ospf 1
+router-id 10.255.254.147
+network 10.255.255.0 0.0.0.255 area 0
+network 10.47.15.0 0.0.0.255 area 47
+exit
+exit
+wr mem
+##TESTING##
+ping 10.255.255.100
+ping 10.255.255.101
+ping 10.255.255.102
+sh ip route
+sh ip ospf int brief
+show ip ospf neighbor

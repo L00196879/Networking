@@ -1,0 +1,31 @@
+conf t
+hostname ABR-DC2-102
+no logging console informational
+no ip domain-lookup
+int gi0/3
+ip address 10.255.255.102 255.255.255.0
+duplex auto
+speed auto
+no shutdown
+exit
+int gi0/0
+ip address 10.2.15.101 255.255.255.0
+duplex auto
+speed auto
+no shutdown
+exit
+router ospf 1
+router-id 10.255.254.102
+network 10.255.255.0 0.0.0.255 area 0
+network 10.2.15.0 0.0.0.255 area 2
+area 2 range 10.2.0.0 255.255.0.0
+exit
+exit
+wr mem
+##TESTING##
+ping 10.255.255.100
+ping 10.255.255.101
+ping 10.255.255.147
+sh ip route
+sh ip ospf int brief
+show ip ospf neighbor
