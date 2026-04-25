@@ -18,6 +18,12 @@ Networking Repository for Joseph Taaffe (L00196879)
     * [A5 Export](https://github.com/L00196879/Networking/blob/main/A5/A5%20Export.gns3project)
     * [Switch Config Files](https://github.com/L00196879/Networking/tree/main/A5/Switch%20Config%20Files)
     * [Diagram & Testing](https://github.com/L00196879/Networking/blob/main/A5/Diagram%20%26%20Testing.md)
+- [A6]()
+    * [FW-DC01-DIFF](https://github.com/L00196879/Networking/blob/main/A6/FW-DC01-DIFF.txt)
+    * [FW-DC02-DIFF](https://github.com/L00196879/Networking/blob/main/A6/FW-DC02-DIFF.txt)
+    * [FW-HO-DIFF](https://github.com/L00196879/Networking/blob/main/A6/FW-HO-DIFF.txt)
+    * [FW-EP47-DIFF](https://github.com/L00196879/Networking/blob/main/A6/FW-EP47-DIFF.txt)
+    * [Notes](https://github.com/L00196879/Networking/blob/main/A6/Notes.md)
 ## Dependencies
 - GNS3
 
