@@ -1,0 +1,357 @@
+config system global
+    set admintimeout 480
+    set alias "FortiGate-VM64-KVM"
+    set hostname "FW-DC01"
+    set timezone 25
+end
+
+config system interface
+    edit "port1"
+        set vdom "root"
+        set mode dhcp
+        set allowaccess ping https ssh http
+        set type physical
+        set alias "WAN"
+        set lldp-reception enable
+        set role wan
+        set snmp-index 1
+    next
+    edit "port2"
+        set vdom "root"
+        set ip 10.1.14.1 255.255.255.0
+        set allowaccess ping
+        set type physical
+        set alias "Internal"
+        set snmp-index 2
+    next
+    edit "port3"
+        set vdom "root"
+        set ip 192.168.10.1 255.255.255.0
+        set allowaccess ping
+        set type physical
+        set alias "DMZ"
+        set role dmz
+        set snmp-index 3
+    next
+	edit "VPN-DC01-DC02"
+        set vdom "root"
+        set type tunnel
+        set snmp-index 13
+        set interface "port1"
+    next
+    edit "VPN-DC1-HO"
+        set vdom "root"
+        set type tunnel
+        set snmp-index 14
+        set interface "port1"
+    next
+    edit "VPN-DC01-EP47"
+        set vdom "root"
+        set type tunnel
+        set snmp-index 15
+        set interface "port1"
+    next
+end
+
+config system dhcp server
+    edit 2
+        set dns-service default
+        set default-gateway 10.1.14.1
+        set netmask 255.255.255.0
+        set interface "port2"
+        config ip-range
+            edit 1
+                set start-ip 10.1.14.100
+                set end-ip 10.1.14.150
+            next
+        end
+    next
+end
+
+config firewall address
+    edit "VPN-DC01-DC02_local_subnet_1"
+        set uuid 92f5bfee-40ae-51f1-5073-0c7beafb6564
+        set allow-routing enable
+        set subnet 10.1.14.0 255.255.255.0
+    next
+    edit "VPN-DC01-DC02_remote_subnet_1"
+        set uuid 92f88472-40ae-51f1-4a19-4a02fba55167
+        set allow-routing enable
+        set subnet 10.2.14.0 255.255.255.0
+    next
+    edit "VPN-DC1-HO_local_subnet_1"
+        set uuid c12c04ae-40b3-51f1-5542-74611de7b3dc
+        set allow-routing enable
+        set subnet 10.1.14.0 255.255.255.0
+    next
+    edit "VPN-DC1-HO_remote_subnet_1"
+        set uuid c12fbdc4-40b3-51f1-a3e4-431d05a793be
+        set allow-routing enable
+        set subnet 10.0.14.0 255.255.255.0
+    next
+    edit "VPN-DC01-EP47_local_subnet_1"
+        set uuid e6e7278c-40b3-51f1-70c9-c76731dc3411
+        set allow-routing enable
+        set subnet 10.1.14.0 255.255.255.0
+    next
+    edit "VPN-DC01-EP47_remote_subnet_1"
+        set uuid e6eda7b0-40b3-51f1-a06c-c368cc839840
+        set allow-routing enable
+        set subnet 10.47.14.0 255.255.255.0
+    next
+    edit "DC01-DMZ"
+        set uuid b3be2dac-40bc-51f1-da67-5526bdb2525b
+        set subnet 192.168.10.0 255.255.255.0
+    next
+end
+
+config firewall addrgrp
+    edit "VPN-DC01-DC02_local"
+        set uuid 92f73a22-40ae-51f1-ee9f-0d9888a84886
+        set member "VPN-DC01-DC02_local_subnet_1"
+        set comment "VPN: VPN-DC01-DC02 (Created by VPN wizard)"
+        set allow-routing enable
+    next
+    edit "VPN-DC01-DC02_remote"
+        set uuid 92faa374-40ae-51f1-8bf0-09b7402a81ee
+        set member "VPN-DC01-DC02_remote_subnet_1"
+        set comment "VPN: VPN-DC01-DC02 (Created by VPN wizard)"
+        set allow-routing enable
+    next
+    edit "VPN-DC1-HO_local"
+        set uuid c12e3da0-40b3-51f1-c457-b4c6bcd8fd3c
+        set member "VPN-DC1-HO_local_subnet_1"
+        set comment "VPN: VPN-DC1-HO (Created by VPN wizard)"
+        set allow-routing enable
+    next
+    edit "VPN-DC1-HO_remote"
+        set uuid c1324224-40b3-51f1-7562-4fdab0ffd63b
+        set member "VPN-DC1-HO_remote_subnet_1"
+        set comment "VPN: VPN-DC1-HO (Created by VPN wizard)"
+        set allow-routing enable
+    next
+    edit "VPN-DC01-EP47_local"
+        set uuid e6e9d70c-40b3-51f1-49cd-eed20525ae8e
+        set member "VPN-DC01-EP47_local_subnet_1"
+        set comment "VPN: VPN-DC01-EP47 (Created by VPN wizard)"
+        set allow-routing enable
+    next
+    edit "VPN-DC01-EP47_remote"
+        set uuid e6efcb3a-40b3-51f1-144c-e5f59463015a
+        set member "VPN-DC01-EP47_remote_subnet_1"
+        set comment "VPN: VPN-DC01-EP47 (Created by VPN wizard)"
+        set allow-routing enable
+    next
+    edit "DC01-NETS"
+        set uuid d9c58900-40bc-51f1-5d88-15ce04e1a462
+        set member "DC01-DMZ" "VPN-DC01-EP47_local_subnet_1"
+    next
+end
+
+config vpn ipsec phase1-interface
+    edit "VPN-DC01-DC02"
+        set interface "port1"
+        set peertype any
+        set net-device disable
+        set proposal des-md5 des-sha1
+        set comments "VPN: VPN-DC01-DC02 (Created by VPN wizard)"
+        set wizard-type static-fortigate
+        set remote-gw 192.168.122.248
+        set psksecret ENC miDwZEq/OlysJl1ldLp6oIpeGZODxRV5x6FqkdgUaBKXblt/7LtvzDF4ZMQuGhCrMVI28CUcWs1DpxhKe5OhwBrJgOAEDuDwC34HojKr071pb+h6cx672D3yju9/+mmaSzZrXwwlP5SeYhF+/DhJEmsQtX1TyRhrnlohvTgHQaey4YkNNNyZCMSHsHfXWHTA7Lm5+w==
+    next
+    edit "VPN-DC1-HO"
+        set interface "port1"
+        set peertype any
+        set net-device disable
+        set proposal des-md5 des-sha1
+        set comments "VPN: VPN-DC01-HO (Created by VPN wizard)"
+        set wizard-type static-fortigate
+        set remote-gw 192.168.122.96
+        set psksecret ENC kcQXpvjXxdWJd1oFT4XbkYLDGGnGM/5l7VUcu0zIFh7FgaDR4gk7ntiFNZyhnzH6YVJ481rzLW72vFwYHGfkjQulAa2SzR5HlHdEI0+GMr0enCXOFhnrxVxBmjrftIXv4orbtuStKg8d5SF2/Ril11rnwNswR9ZAL8yWggM5Kk5DH7DAIE1RafpTpqAR96Cx+Sfk2g==
+    next
+    edit "VPN-DC01-EP47"
+        set interface "port1"
+        set peertype any
+        set net-device disable
+        set proposal des-md5 des-sha1
+        set comments "VPN: VPN-DC01-EP47 (Created by VPN wizard)"
+        set remote-gw 192.168.122.217
+        set psksecret ENC K5V4wD+ADRXcE1vKY3VhS8T2hLYFIGCx9OlUY9aq0j3Wd1iIW+zzW9CWhF3X/EbYz1PAdjIVOtc9FCek/MxtXm6c/69/tDLgu/mUzalrs4OKlqfbp7K/DtPkAFUyjq1v8Hd1/9M4c00hV7gcuCH2xugzLkgFmJl+SDIwfGeMp/jmdHmUHMt6RYhody8Ydlhk2wjZjg==
+    next
+end
+config vpn ipsec phase2-interface
+    edit "VPN-DC01-DC02"
+        set phase1name "VPN-DC01-DC02"
+        set proposal des-md5 des-sha1
+        set comments "VPN: VPN-DC01-DC02 (Created by VPN wizard)"
+        set src-addr-type name
+        set dst-addr-type name
+        set src-name "VPN-DC01-DC02_local"
+        set dst-name "VPN-DC01-DC02_remote"
+    next
+    edit "VPN-DC1-HO"
+        set phase1name "VPN-DC1-HO"
+        set proposal des-md5 des-sha1
+        set comments "VPN: VPN-DC1-HO (Created by VPN wizard)"
+        set src-addr-type name
+        set dst-addr-type name
+        set src-name "VPN-DC1-HO_local"
+        set dst-name "VPN-DC1-HO_remote"
+    next
+    edit "VPN-DC01-EP47"
+        set phase1name "VPN-DC01-EP47"
+        set proposal des-md5 des-sha1
+        set comments "VPN: VPN-DC01-EP47 (Created by VPN wizard)"
+        set src-addr-type name
+        set dst-addr-type name
+        set src-name "VPN-DC01-EP47_local"
+        set dst-name "VPN-DC01-EP47_remote"
+    next
+end
+
+config firewall policy
+    edit 1
+        set name "LAN to WAN"
+        set uuid 768c03b4-40a8-51f1-0dd2-43be5ffd563b
+        set srcintf "port2"
+        set dstintf "port1"
+        set srcaddr "all"
+        set dstaddr "all"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set nat enable
+    next
+    edit 2
+        set name "DMZ to WAN"
+        set uuid 91f82312-40ad-51f1-f416-bc756d0ee34f
+        set srcintf "port3"
+        set dstintf "port1"
+        set srcaddr "all"
+        set dstaddr "all"
+        set action accept
+        set schedule "always"
+        set service "DNS" "HTTP" "HTTPS" "PING"
+        set nat enable
+    next
+    edit 3
+        set name "vpn_VPN-DC01-DC02_local_0"
+        set uuid 9303984e-40ae-51f1-a481-1d802a072c2e
+        set srcintf "port2"
+        set dstintf "VPN-DC01-DC02"
+        set srcaddr "VPN-DC01-DC02_local"
+        set dstaddr "VPN-DC01-DC02_remote"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set comments "VPN: VPN-DC01-DC02 (Created by VPN wizard)"
+    next
+    edit 4
+        set name "vpn_VPN-DC01-DC02_remote_0"
+        set uuid 930dfaa0-40ae-51f1-d4f4-ad0080360eda
+        set srcintf "VPN-DC01-DC02"
+        set dstintf "port2"
+        set srcaddr "VPN-DC01-DC02_remote"
+        set dstaddr "VPN-DC01-DC02_local"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set comments "VPN: VPN-DC01-DC02 (Created by VPN wizard)"
+    next
+    edit 5
+        set name "vpn_VPN-DC1-HO_local_0"
+        set uuid c13b81ea-40b3-51f1-66f6-d0305450a45f
+        set srcintf "port2"
+        set dstintf "VPN-DC1-HO"
+        set srcaddr "VPN-DC1-HO_local"
+        set dstaddr "VPN-DC1-HO_remote"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set comments "VPN: VPN-DC1-HO (Created by VPN wizard)"
+    next
+    edit 6
+        set name "vpn_VPN-DC1-HO_remote_0"
+        set uuid c146c94c-40b3-51f1-69d5-64c8c27fbf05
+        set srcintf "VPN-DC1-HO"
+        set dstintf "port2"
+        set srcaddr "VPN-DC1-HO_remote"
+        set dstaddr "VPN-DC1-HO_local"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set comments "VPN: VPN-DC1-HO (Created by VPN wizard)"
+    next
+    edit 7
+        set name "vpn_VPN-DC01-EP47_local_0"
+        set uuid e6fa72ba-40b3-51f1-43ba-3f795383d3f7
+        set srcintf "port2"
+        set dstintf "VPN-DC01-EP47"
+        set srcaddr "VPN-DC01-EP47_local"
+        set dstaddr "VPN-DC01-EP47_remote"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set comments "VPN: VPN-DC01-EP47 (Created by VPN wizard)"
+    next
+    edit 8
+        set name "vpn_VPN-DC01-EP47_remote_0"
+        set uuid e70337f6-40b3-51f1-bb65-9a9bdb41d2f5
+        set srcintf "VPN-DC01-EP47"
+        set dstintf "port2"
+        set srcaddr "VPN-DC01-EP47_remote"
+        set dstaddr "VPN-DC01-EP47_local"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set comments "VPN: VPN-DC01-EP47 (Created by VPN wizard)"
+    next
+    edit 9
+        set name "LAN to DMZ"
+        set uuid 41b1d072-40b9-51f1-6ede-85ddf47b7b06
+        set srcintf "port2"
+        set dstintf "port3"
+        set srcaddr "all"
+        set dstaddr "all"
+        set action accept
+        set schedule "always"
+        set service "PING"
+        set nat enable
+    next
+end
+
+config router static
+    edit 1
+        set device "VPN-DC01-DC02"
+        set comment "VPN: VPN-DC01-DC02 (Created by VPN wizard)"
+        set dstaddr "VPN-DC01-DC02_remote"
+    next
+    edit 2
+        set distance 254
+        set comment "VPN: VPN-DC01-DC02 (Created by VPN wizard)"
+        set blackhole enable
+        set dstaddr "VPN-DC01-DC02_remote"
+    next
+    edit 3
+        set device "VPN-DC1-HO"
+        set comment "VPN: VPN-DC1-HO (Created by VPN wizard)"
+        set dstaddr "VPN-DC1-HO_remote"
+    next
+    edit 4
+        set distance 254
+        set comment "VPN: VPN-DC1-HO (Created by VPN wizard)"
+        set blackhole enable
+        set dstaddr "VPN-DC1-HO_remote"
+    next
+    edit 5
+        set device "VPN-DC01-EP47"
+        set comment "VPN: VPN-DC01-EP47 (Created by VPN wizard)"
+        set dstaddr "VPN-DC01-EP47_remote"
+    next
+    edit 6
+        set distance 254
+        set comment "VPN: VPN-DC01-EP47 (Created by VPN wizard)"
+        set blackhole enable
+        set dstaddr "VPN-DC01-EP47_remote"
+    next
+end

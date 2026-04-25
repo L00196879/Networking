@@ -1,0 +1,150 @@
+config system global
+    set admintimeout 480
+    set alias "FortiGate-VM64-KVM"
+    set hostname "FW-HO"
+    set timezone 25
+end
+
+config system interface
+    edit "port1"
+        set vdom "root"
+        set mode dhcp
+        set allowaccess ping https ssh http
+        set type physical
+        set alias "WAN"
+        set lldp-reception enable
+        set role wan
+        set snmp-index 1
+    next
+    edit "port2"
+        set vdom "root"
+        set ip 10.0.14.1 255.255.255.0
+        set allowaccess ping
+        set type physical
+        set alias "Internal"
+        set device-identification enable
+        set lldp-transmission enable
+        set role lan
+        set snmp-index 2
+    next
+	edit "VPN-HO-DC01"
+        set vdom "root"
+        set type tunnel
+        set snmp-index 13
+        set interface "port1"
+    next
+end
+
+config system dhcp server
+    edit 2
+        set dns-service default
+        set default-gateway 10.0.14.1
+        set netmask 255.255.255.0
+        set interface "port2"
+        config ip-range
+            edit 1
+                set start-ip 10.0.14.100
+                set end-ip 10.0.14.150
+            next
+        end
+    next
+end
+
+config firewall address
+	edit "VPN-HO-DC01_local_subnet_1"
+        set uuid 6b3ce472-40b4-51f1-2964-38c4dabb734e
+        set allow-routing enable
+        set subnet 10.0.14.0 255.255.255.0
+    next
+    edit "VPN-HO-DC01_remote_subnet_1"
+        set uuid 6b4054b8-40b4-51f1-b9a2-f9292d1fff24
+        set allow-routing enable
+        set subnet 10.1.14.0 255.255.255.0
+    next
+end
+
+config firewall addrgrp
+    edit "VPN-HO-DC01_remote"
+        set uuid 6b436da6-40b4-51f1-f538-934de8133d03
+        set member "VPN-HO-DC01_remote_subnet_1"
+        set comment "VPN: VPN-HO-DC01 (Created by VPN wizard)"
+        set allow-routing enable
+    next
+end
+
+config vpn ipsec phase1-interface
+    edit "VPN-HO-DC01"
+        set interface "port1"
+        set peertype any
+        set net-device disable
+        set proposal des-md5 des-sha1
+        set comments "VPN: VPN-HO-DC01 (Created by VPN wizard)"
+        set wizard-type static-fortigate
+        set remote-gw 192.168.122.191
+        set psksecret ENC SQCNzXeEl/fqubQ29WyT7fxkY/dyyKaMdsjWCEmZimhV731wMzG7tvFHph0oGB3Qx+awrO9iCdyCIEcNl54S2LtwNzUBP+yTYnkaN/9ZsTRhsu4Q95n7y6r7uWhTz2zowMJVCzq6phh76cjlmY4UNq1CAgxJ5IBTTXunHUWbw9RyMqAWZgHOG8yaUYJLdR0G7sejTA==
+    next
+end
+config vpn ipsec phase2-interface
+    edit "VPN-HO-DC01"
+        set phase1name "VPN-HO-DC01"
+        set proposal des-md5 des-sha1
+        set comments "VPN: VPN-HO-DC01 (Created by VPN wizard)"
+        set src-addr-type name
+        set dst-addr-type name
+        set src-name "VPN-HO-DC01_local"
+        set dst-name "VPN-HO-DC01_remote"
+    next
+end
+
+config firewall policy
+    edit 1
+        set name "LAN to WAN"
+        set uuid 292aff7a-40a9-51f1-d96e-4a50156ce070
+        set srcintf "port2"
+        set dstintf "port1"
+        set srcaddr "all"
+        set dstaddr "all"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set nat enable
+    next
+    edit 2
+        set name "vpn_VPN-HO-DC01_local_0"
+        set uuid 6b4b27f8-40b4-51f1-a3ba-0e9e067335b9
+        set srcintf "port2"
+        set dstintf "VPN-HO-DC01"
+        set srcaddr "VPN-HO-DC01_local"
+        set dstaddr "VPN-HO-DC01_remote"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set comments "VPN: VPN-HO-DC01 (Created by VPN wizard)"
+    next
+    edit 3
+        set name "vpn_VPN-HO-DC01_remote_0"
+        set uuid 6b560ce0-40b4-51f1-b7fa-37d112c0b034
+        set srcintf "VPN-HO-DC01"
+        set dstintf "port2"
+        set srcaddr "VPN-HO-DC01_remote"
+        set dstaddr "VPN-HO-DC01_local"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+        set comments "VPN: VPN-HO-DC01 (Created by VPN wizard)"
+    next
+end
+
+config router static
+    edit 1
+        set device "VPN-HO-DC01"
+        set comment "VPN: VPN-HO-DC01 (Created by VPN wizard)"
+        set dstaddr "VPN-HO-DC01_remote"
+    next
+    edit 2
+        set distance 254
+        set comment "VPN: VPN-HO-DC01 (Created by VPN wizard)"
+        set blackhole enable
+        set dstaddr "VPN-HO-DC01_remote"
+    next
+end
