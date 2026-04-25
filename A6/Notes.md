@@ -1,7 +1,7 @@
 # Assigment 6 Diagram and Testing
 
 ## 1. Diagram
-![Diagram](A6/Images/Diagram.png)
+![Diagram](Images/Diagram.png)
 
 ## 2. Notes
 ### Network Overview
