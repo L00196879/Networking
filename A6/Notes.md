@@ -24,4 +24,8 @@
  | port2     | LAN  | Internal users        |
  | port3 (DC01 & DC02)    | DMZ  | Web Servers |
 
-  
+  ## 3. Access for external partys
+  The DMZ should have been set up to allow access for external partys via the WAN, so web servers can be hosted on there
+  For external contractors, guest access can be configured to allow them limited access, which can be done via the user groups in the GUI of the Forigate. 
+  Additional authorisation should, be implemented, such as username and password, as well as 2FA if possible
+  Network segmentation should also be used, and logs should be taken of user activity.
